@@ -16,7 +16,10 @@ class GLOOM2_API AGloom2PlayerState : public APlayerState
 	
 public:
 	UPROPERTY(Replicated)
-		bool bTeamB;
+		bool bHuman;
 	
-	
+	UPROPERTY(Replicated)
+		bool bAlien;
+
+	uint8 Team = 0; // Start as a spectator, 0 = Spectator, 1 = Human, 2 = Alien
 };

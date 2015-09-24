@@ -18,6 +18,8 @@ public:
 
 	bool ShouldSpawnAtStartSpot(AController * Player) override { return false; };
 
+	//FTimerHandle FTimer_MsgHUD;
+
 };
 
 

@@ -8,7 +8,10 @@ void AGloom2PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AGloom2PlayerState, bTeamB);
+
+	DOREPLIFETIME(AGloom2PlayerState, Team);
+	DOREPLIFETIME(AGloom2PlayerState, bHuman);
+	
 
 }
 

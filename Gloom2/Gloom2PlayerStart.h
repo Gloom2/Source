@@ -15,7 +15,10 @@ class GLOOM2_API AGloom2PlayerStart : public APlayerStart
 	
 public:
 	UPROPERTY(EditAnywhere, Category = "Spawns")
-		bool bTeamB;
+		bool bHuman;
+
+	uint8 Team = 0;
+
 	
 	
 };

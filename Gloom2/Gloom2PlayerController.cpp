@@ -2,6 +2,7 @@
 
 #include "Gloom2.h"
 #include "Gloom2PlayerController.h"
+#include "Gloom2HUD.h"
 
 void AGloom2PlayerController::OnKilled()
 {
