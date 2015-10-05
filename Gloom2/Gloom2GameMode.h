@@ -14,11 +14,19 @@ public:
 
 	void PostLogin(APlayerController * NewPlayer) override;
 
-	AActor * ChoosePlayerStart(AController * Player);
-
 	bool ShouldSpawnAtStartSpot(AController * Player) override { return false; };
 
-	//FTimerHandle FTimer_MsgHUD;
+	virtual AActor * ChoosePlayerStart_Implementation(AController * Player);
+
+	virtual bool IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController* Player) const;
+
+	void UpdateTeamCount(AController* Player);
+
+protected:
+
+	uint8 numTeamH = 0;
+	uint8 numTeamA = 0;
+	uint8 numTeamS = 0;
 
 };
 

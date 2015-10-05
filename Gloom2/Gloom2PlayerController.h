@@ -15,12 +15,16 @@ class GLOOM2_API AGloom2PlayerController : public APlayerController
 
 	FTimerHandle TimerHandle_Respawn;
 
+	
 public:
 
 	void OnKilled();
 
 	void Respawn();
 
-	
+	UFUNCTION(client, reliable)
+		virtual void ClientSetMessage(AGloom2PlayerController *Gloom2Player, const FString &_message);
+
+
 	
 };

@@ -15,5 +15,4 @@ class GLOOM2_API AGloom2AlienStart : public AGloom2PlayerStart
 	
 	
 	
-	
 };

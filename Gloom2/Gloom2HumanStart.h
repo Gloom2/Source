@@ -12,5 +12,6 @@ UCLASS(Category = "Spawns")
 class GLOOM2_API AGloom2HumanStart : public AGloom2PlayerStart
 {
 	GENERATED_BODY()
+
 	
 };

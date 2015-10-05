@@ -8,17 +8,9 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Category = "Spawns")
 class GLOOM2_API AGloom2PlayerStart : public APlayerStart
 {
 	GENERATED_BODY()
-	
-public:
-	UPROPERTY(EditAnywhere, Category = "Spawns")
-		bool bHuman;
 
-	uint8 Team = 0;
-
-	
-	
 };

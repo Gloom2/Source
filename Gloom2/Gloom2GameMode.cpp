@@ -25,121 +25,49 @@ AGloom2GameMode::AGloom2GameMode()
 
 }
 
+
 void AGloom2GameMode::PostLogin(APlayerController * NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	if (NewPlayer)
+
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		AGloom2HUD * MsgHUD = Cast<AGloom2HUD>(NewPlayer->GetHUD());
-		AGloom2PlayerState * PS = Cast<AGloom2PlayerState>(NewPlayer->PlayerState);
-		if (PS && GameState) //If PlayerState and GameState are Valid
+		AGloom2PlayerController *currentPC = Cast<AGloom2PlayerController>(*Iterator);
+		if (currentPC && currentPC != NewPlayer)
 		{
-			uint8 numHumans = 0; //Number of Humans
-			uint8 numAliens = 0; //Number of Aliens
-			for (APlayerState * It : GameState->PlayerArray)
+			AGloom2PlayerState *currentPS = Cast<AGloom2PlayerState>(currentPC->PlayerState);
+			uint8 Team = currentPS->GetTeamNum(NewPlayer);
+			if (currentPS)
 			{
-				AGloom2PlayerState * OtherPS = Cast<AGloom2PlayerState>(It);
-				OtherPS->Team = 1;
-				//if (PS->Team == 0)
-				//{
-				//	/*NewPlayer->PlayerState->bIsSpectator = true;
-				//	NewPlayer->ChangeState(NAME_Spectating);
-				//	if (MsgHUD)
-				//	{
-				//		MsgHUD->SetMessage("You have joined the spectators.");
-				//	}*/
-				//}
-				if (OtherPS->Team == 1)
+				if (Team == 1)
 				{
-					NewPlayer->PlayerState->bIsSpectator = false;
-					NewPlayer->ChangeState(NAME_Playing);
-					if (MsgHUD)
-					{
-						MsgHUD->SetMessage("You have joined the Human team.");
-					}
-					numHumans++;
-
+					
+					currentPC->ClientSetMessage(currentPC, "You have joined the Human team.");
+					UpdateTeamCount(currentPC);
 				}
-				if (OtherPS->Team == 2)
+					
+				else if (Team == 2)
 				{
-					NewPlayer->PlayerState->bIsSpectator = false;
-					NewPlayer->ChangeState(NAME_Playing);
-					if (MsgHUD)
-					{
-						MsgHUD->SetMessage("You have joined the Alien team.");
-					}
-					numAliens++;
+					
+					currentPC->ClientSetMessage(currentPC, "You have joined the Alien team.");
+					UpdateTeamCount(currentPC);
 				}
-						
-
-
+				else
+				{
+					currentPC->ClientSetMessage(currentPC, "You have joined the Spectators.");
+					UpdateTeamCount(currentPC);
+				}
+					
+				
 			}
-
-
 		}
-
-
-
 	}
-
-
-
 
 }
-/*void AGloom2GameMode::PostLogin(APlayerController * NewPlayer) //This Function works (I think)
-{
-	Super::PostLogin(NewPlayer);
 
-	if (NewPlayer)
-	{
-		AGloom2HUD * MsgHUD = Cast <AGloom2HUD>(NewPlayer->GetHUD());
-		AGloom2PlayerState * PS = Cast<AGloom2PlayerState>(NewPlayer->PlayerState);
-		if (PS && GameState)
-		{
-			uint8 NumTeamA = 0; // Number of Alien Players
-			uint8 NumTeamH = 0; // Number of Human Players
-			
-			for (APlayerState * It : GameState->PlayerArray)
-			{
-				AGloom2PlayerState * OtherPS = Cast<AGloom2PlayerState>(It);
-				if (OtherPS)
-				{
-					if (OtherPS->Team = 1)
-					{
-						NumTeamH++; // Adds 1 to Human Count
-						if (MsgHUD)
-						{
-							MsgHUD->SetMessage("You have joined the Human team.");
-							
-						}
-						
-					}
-					else
-					{
-						NumTeamA++; // Adds 1 to Alien Count
-						if (MsgHUD)
-						{
-							MsgHUD->SetMessage("You have joined the Alien team.");
-						}
-						
-					}
-				}
-			}
-			if (NumTeamA > NumTeamH)
-			{
-				PS->Team = 1;
-			}
-		}
-	}
-
-
-}*/
-
-
-AActor * AGloom2GameMode::ChoosePlayerStart(AController * Player) //Choose the spawns for the player
-{
-	
+AActor * AGloom2GameMode::ChoosePlayerStart_Implementation(AController * Player) //Choose the spawns for the player
+{	
 	if (Player) // If player is valid
 	{
 		AGloom2PlayerState * PS = Cast<AGloom2PlayerState>(Player->PlayerState);
@@ -148,26 +76,28 @@ AActor * AGloom2GameMode::ChoosePlayerStart(AController * Player) //Choose the s
 			TArray<AGloom2HumanStart *> HStarts; //Human Starts (Gloom2HumanStart)
 			TArray<AGloom2AlienStart *> AStarts; //Alien Starts (Gloom2AlienStart)
 			TArray<AGloom2PlayerStart *> SStarts; //Spectator Starts (Should just be Gloom2PlayerStart)
-			if (PS->Team == 1)
+			uint8 Team = PS->GetTeamNum(Player);
+
+			if (Team == 1)
 			{
 				for (TActorIterator<AGloom2HumanStart> StartItr(GetWorld()); StartItr; ++StartItr)
 				{
-					if (StartItr->Team == PS->Team)
+					AGloom2HumanStart* TestSpawn = *StartItr;
+					if (IsSpawnpointAllowed(TestSpawn, Player))
 					{
-						HStarts.Add(*StartItr);
+						HStarts.Add(TestSpawn);
 					}
 				}
 				return HStarts[FMath::RandRange(0, HStarts.Num() - 1)];
-
 			}
-			else if (PS->Team == 2)
+			else if (Team == 2)
 			{
 				for (TActorIterator<AGloom2AlienStart> StartItr(GetWorld()); StartItr; ++StartItr)
 				{
-					if (StartItr->Team == PS->Team)
+					AGloom2AlienStart* TestSpawn = *StartItr;
+					if (IsSpawnpointAllowed(TestSpawn, Player))
 					{
-
-						AStarts.Add(*StartItr);
+						AStarts.Add(TestSpawn);
 					}
 				}
 				return AStarts[FMath::RandRange(0, AStarts.Num() - 1)];
@@ -176,18 +106,79 @@ AActor * AGloom2GameMode::ChoosePlayerStart(AController * Player) //Choose the s
 			{
 				for (TActorIterator<AGloom2PlayerStart> StartItr(GetWorld()); StartItr; ++StartItr)
 				{
-					if (StartItr->Team == PS->Team)
+					AGloom2PlayerStart* TestSpawn = *StartItr;
+					if (IsSpawnpointAllowed(TestSpawn, Player))
 					{
-						SStarts.Add(*StartItr);
-
+						SStarts.Add(TestSpawn);
 					}
 				}
 				return SStarts[FMath::RandRange(0, SStarts.Num() - 1)];
-
-
-			}
-			
+			}			
 		}
 	}
 	return NULL;
+}
+
+bool AGloom2GameMode::IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController* Player) const
+{
+	
+	if (Player)
+	{
+		AGloom2PlayerState * PS = Cast<AGloom2PlayerState>(Player->PlayerState);
+		uint8 Team = PS->GetTeamNum(Player);
+		if (Team == 1)
+		{
+			AGloom2HumanStart * PlayerStart = Cast<AGloom2HumanStart>(SpawnPoint);
+			if (PS && PlayerStart && Team != 1)
+			{
+				return false;
+			}
+			else { return true; }
+		}
+		else if (Team == 2)
+		{
+			AGloom2AlienStart * PlayerStart = Cast<AGloom2AlienStart>(SpawnPoint);
+			if (PS && PlayerStart && Team != 2)
+			{
+				return false;
+			}
+			else { return true; }
+		}
+		else
+		{
+			AGloom2PlayerStart * PlayerStart = Cast<AGloom2PlayerStart>(SpawnPoint);
+			if (PS && PlayerStart && Team != 0)
+			{
+				return false;
+			}
+			else { return true; }
+		}
+	}
+	return true;
+}
+
+void AGloom2GameMode::UpdateTeamCount(AController* Player) // Update the count of team members
+{
+	if (Player)
+	{
+		AGloom2PlayerState * PS = Cast<AGloom2PlayerState>(Player->PlayerState);
+		uint8 Team = PS->GetTeamNum(Player);
+		if (PS)
+		{
+			if (Team == 0)
+			{
+				numTeamS++; //Increment the spectator team by 1
+			}
+			else if (Team == 1)
+			{
+				numTeamH++; //Increment the human team by 1
+			}
+			else
+			{
+				numTeamA++; //Increment the alien team by 1
+			}
+		}
+
+	}
+
 }

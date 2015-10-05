@@ -16,7 +16,8 @@ public:
 
 	FString GetUIMessage();
 
-	void SetMessage(FString Message);
+	UFUNCTION()
+		void SetMessage(FString Message);
 
 	FString UIMessage;
 

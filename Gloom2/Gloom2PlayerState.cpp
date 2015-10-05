@@ -8,11 +8,29 @@ void AGloom2PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-
 	DOREPLIFETIME(AGloom2PlayerState, Team);
-	DOREPLIFETIME(AGloom2PlayerState, bHuman);
 	
 
+}
+uint8 AGloom2PlayerState::GetTeamNum(AController* Player)
+{
+	AGloom2PlayerState* PS = Cast<AGloom2PlayerState>(Player->PlayerState);
+	if (PS)
+	{
+		PS->Team = 0;
+		return PS->Team;
+	}
+	return 0;
+}
+
+int32 AGloom2PlayerState::GetFrags() const
+{
+	return numFrags;
+}
+
+int32 AGloom2PlayerState::GetDeaths() const
+{
+	return numDeaths;
 }
 
 
