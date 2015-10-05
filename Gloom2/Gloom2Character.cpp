@@ -50,6 +50,11 @@ AGloom2Character::AGloom2Character()
 
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	/*Ammo system code*/
+	loadedAmmo = 30;
+	ammoPool = 30;
+	/*End ammo*/
 }
 
 void AGloom2Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -89,6 +94,9 @@ void AGloom2Character::SetupPlayerInputComponent(class UInputComponent* InputCom
 	InputComponent->BindAxis("TurnRate", this, &AGloom2Character::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &AGloom2Character::LookUpAtRate);
+
+	//Bind reload to key
+	InputComponent->BindAction("Reload", IE_Pressed, this, &AGloom2Character::onReload);
 }
 
 void AGloom2Character::StartFiring()
@@ -127,6 +135,17 @@ bool AGloom2Character::ServerPerformTask_Validate(ETaskEnum::Type NewTask)
 
 void AGloom2Character::OnFire()
 { 
+	/*Ammo system code*/
+	if (loadedAmmo <= 0) //if no ammo remaining
+	{
+		return; //don't fire
+	}
+	else
+	{
+		loadedAmmo--; //fire and deduct ammo
+	}
+	/*End ammo*/
+
 	if (Task != ETaskEnum::Fire) return;
 	
 	// try and fire a projectile
@@ -161,6 +180,24 @@ void AGloom2Character::OnFire()
 		}
 	}
 	GetWorldTimerManager().SetTimer(FTimerHandle_Task, this, &AGloom2Character::OnFire, 0.1f);
+}
+
+void AGloom2Character::onReload()
+{
+	if (ammoPool <= 0 || loadedAmmo >= 30) //if no reserve ammo or gun is full
+	{
+		return;
+	}
+	else if (ammoPool < (30 - loadedAmmo)) //if reserve is less than full mag, load only remaining ammo
+	{
+		loadedAmmo = loadedAmmo + ammoPool;
+		ammoPool = 0;
+	}
+	else //else reload mag to full
+	{
+		ammoPool = ammoPool - (30 - loadedAmmo);
+		loadedAmmo = 30;
+	}
 }
 
 void AGloom2Character::BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
