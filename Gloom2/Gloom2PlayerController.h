@@ -22,8 +22,10 @@ public:
 
 	void Respawn();
 
-	UFUNCTION(client, reliable)
+	UFUNCTION(Client, Reliable)
 		virtual void ClientSetMessage(AGloom2PlayerController *Gloom2Player, const FString &_message);
+	
+	void SetInfoHUD(AGloom2PlayerController *Gloom2Player);
 
 
 	

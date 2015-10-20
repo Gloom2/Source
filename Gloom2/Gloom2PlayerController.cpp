@@ -28,9 +28,24 @@ void AGloom2PlayerController::Respawn()
 void AGloom2PlayerController::ClientSetMessage_Implementation(AGloom2PlayerController *Gloom2Player, const FString &_message)
 {
 	AGloom2HUD *gloomHUD = Cast<AGloom2HUD>(Gloom2Player->GetHUD());
-	if (gloomHUD)
+	if (gloomHUD && Gloom2Player)
 	{
 		gloomHUD->SetMessage(_message);
 	}
 
 }
+
+//void AGloom2PlayerController::SetInfoHUD(AGloom2PlayerController *Gloom2Player)
+//{
+//	AGloom2PlayerState* PS = Cast<AGloom2PlayerState>(Gloom2Player->PlayerState);
+//	AGloom2HUD* gloom2HUD = Cast<AGloom2HUD>(Gloom2Player->GetHUD());
+//	int32 frags = PS->GetFrags(Gloom2Player);
+//	uint8 teamNum = PS->GetTeamNum(Gloom2Player);
+//
+//	if (gloom2HUD && PS)
+//	{
+//		gloom2HUD->SetGloomHUD(Gloom2Player);
+//	}
+//
+//
+//}

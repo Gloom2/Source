@@ -79,6 +79,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class UAnimMontage* FireAnimation;
 
+	/*New Code for Weapon Ammo*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
+		int32 loadedAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
+		int32 ammoPool;
+	/*Ammo End*/
+
+
 protected:
 
 	void PerformTask(ETaskEnum::Type NewTask);
@@ -92,6 +101,9 @@ protected:
 	
 	/** Fires a projectile. */
 	void OnFire();
+
+	/** Reload Weapon */
+	void OnReload();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);

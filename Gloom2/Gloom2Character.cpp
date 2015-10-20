@@ -50,6 +50,11 @@ AGloom2Character::AGloom2Character()
 
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	/*Ammo system code*/
+	loadedAmmo = 30;
+	ammoPool = 30;
+	/*End ammo*/
 }
 
 void AGloom2Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -74,10 +79,10 @@ void AGloom2Character::SetupPlayerInputComponent(class UInputComponent* InputCom
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	
 	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AGloom2Character::TouchStarted);
-	if( EnableTouchscreenMovement(InputComponent) == false )
+	/*if( EnableTouchscreenMovement(InputComponent) == false )
 	{
 		InputComponent->BindAction("Fire", IE_Pressed, this, &AGloom2Character::OnFire);
-	}
+	}*/
 	
 	InputComponent->BindAxis("MoveForward", this, &AGloom2Character::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AGloom2Character::MoveRight);
@@ -89,6 +94,9 @@ void AGloom2Character::SetupPlayerInputComponent(class UInputComponent* InputCom
 	InputComponent->BindAxis("TurnRate", this, &AGloom2Character::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &AGloom2Character::LookUpAtRate);
+
+	//Bind reload to key
+	InputComponent->BindAction("Reload", IE_Pressed, this, &AGloom2Character::OnReload);
 }
 
 void AGloom2Character::StartFiring()
@@ -128,39 +136,67 @@ bool AGloom2Character::ServerPerformTask_Validate(ETaskEnum::Type NewTask)
 void AGloom2Character::OnFire()
 { 
 	if (Task != ETaskEnum::Fire) return;
-	
-	// try and fire a projectile
-	if (ProjectileClass != NULL)
-	{
-		const FRotator SpawnRotation = GetViewRotation();
-		// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
 
-		UWorld* const World = GetWorld();
-		if (World != NULL)
+	if (loadedAmmo > 0)
+	{
+
+		loadedAmmo--;
+		// try and fire a projectile
+		if (ProjectileClass != NULL)
 		{
-			// spawn the projectile at the muzzle
-			World->SpawnActor<AGloom2Projectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+			const FRotator SpawnRotation = GetViewRotation();
+			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+			const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
+
+			UWorld* const World = GetWorld();
+
+
+			if (World != NULL)
+			{
+				// spawn the projectile at the muzzle
+				World->SpawnActor<AGloom2Projectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+			}
+
+		}
+
+		// try and play the sound if specified
+		if (FireSound != NULL)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		}
+
+		// try and play a firing animation if specified
+		if (FireAnimation != NULL)
+		{
+			// Get the animation object for the arms mesh
+			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+			if (AnimInstance != NULL)
+			{
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
 		}
 	}
+	else { return; };
 
-	// try and play the sound if specified
-	if (FireSound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
+	GetWorldTimerManager().SetTimer(FTimerHandle_Task, this, &AGloom2Character::OnFire, 0.3f);
+}
 
-	// try and play a firing animation if specified
-	if(FireAnimation != NULL)
+void AGloom2Character::OnReload()
+{
+	if (ammoPool <= 0 || loadedAmmo >= 30) //if no reserve ammo or gun is full
 	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if(AnimInstance != NULL)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
+		return;
 	}
-	GetWorldTimerManager().SetTimer(FTimerHandle_Task, this, &AGloom2Character::OnFire, 0.1f);
+	else if (ammoPool < (30 - loadedAmmo)) //if reserve is less than full mag, load only remaining ammo
+	{
+		loadedAmmo = loadedAmmo + ammoPool;
+		ammoPool = 0;
+	}
+	else //else reload mag to full
+	{
+		ammoPool = ammoPool - (30 - loadedAmmo);
+		loadedAmmo = 30;
+	}
 }
 
 void AGloom2Character::BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location)

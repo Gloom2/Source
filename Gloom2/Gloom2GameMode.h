@@ -12,15 +12,15 @@ class AGloom2GameMode : public AGameMode
 public:
 	AGloom2GameMode();
 
-	void PostLogin(APlayerController * NewPlayer) override;
+	void PostLogin(APlayerController *NewPlayer) override;
 
-	bool ShouldSpawnAtStartSpot(AController * Player) override { return false; };
+	bool ShouldSpawnAtStartSpot(AController *Player) override { return false; };
 
-	virtual AActor * ChoosePlayerStart_Implementation(AController * Player);
+	virtual AActor *ChoosePlayerStart(AController* Player);
 
-	virtual bool IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController* Player) const;
+	virtual bool IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController *Player) const;
 
-	void UpdateTeamCount(AController* Player);
+	void UpdateTeamCount(AController *Player);
 
 protected:
 

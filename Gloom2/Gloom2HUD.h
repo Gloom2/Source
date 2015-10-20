@@ -1,7 +1,10 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #pragma once 
 #include "GameFramework/HUD.h"
+#include "Gloom2PlayerController.h"
+#include "Gloom2PlayerState.h"
 #include "Gloom2HUD.generated.h"
+
 
 UCLASS()
 class AGloom2HUD : public AHUD
@@ -19,14 +22,25 @@ public:
 	UFUNCTION()
 		void SetMessage(FString Message);
 
-	FString UIMessage;
+	UFUNCTION()
+		void SetTeamMessage(int32 TeamNum);
+
+	UFUNCTION()
+		void SetFragsMessage(int32 Frags);
+
+	/*UFUNCTION()
+		AGloom2HUD* SetGloomHUD(AGloom2PlayerController* Player);*/
+
+	int32 GetFrags(AGloom2PlayerController *Player);
+	//FString GetTeam(AGloom2PlayerController *Player);
 
 
 private:
 	/** Crosshair asset pointer */
-	class UTexture2D* CrosshairTex;
+	class UTexture2D *CrosshairTex;
 
-	class UFont* DisplayFont;
+	class UFont *DisplayFont;
+	class UFont *HUDFont;
 
 	//void Tick(float DeltaTime) override;
 
@@ -34,8 +48,17 @@ private:
 
 	FString DisplayText;
 
-	void DisplayMessage(FString DisplayText, UFont* DisplayFont, FVector2D DisplayMessagePosition);
+	FString UIMessage;
+	int32 playerFrags;
+	int32 teamNum;
+	FString teamName;
+	AGloom2PlayerController *Gloom2Player;
+	//AGloom2PlayerState* Gloom2PS;
+	//AGloom2HUD* Gloom2HUD;
 
+	void DisplayMessage(FString DisplayText, UFont *DisplayFont, FVector2D DisplayMessagePosition);
+	void DisplayGloomHUD(FString Team, int32 Frags, UFont *HUDFont, FVector2D TeamDisplayPosition, FVector2D FragDisplayPosition);
+	/*AGloom2PlayerController* GetPlayer();*/
 
 };
 
