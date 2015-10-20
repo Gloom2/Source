@@ -96,7 +96,11 @@ void AGloom2Character::SetupPlayerInputComponent(class UInputComponent* InputCom
 	InputComponent->BindAxis("LookUpRate", this, &AGloom2Character::LookUpAtRate);
 
 	//Bind reload to key
+<<<<<<< HEAD
 	InputComponent->BindAction("Reload", IE_Pressed, this, &AGloom2Character::OnReload);
+=======
+	InputComponent->BindAction("Reload", IE_Pressed, this, &AGloom2Character::onReload);
+>>>>>>> origin/master
 }
 
 void AGloom2Character::StartFiring()
@@ -135,6 +139,17 @@ bool AGloom2Character::ServerPerformTask_Validate(ETaskEnum::Type NewTask)
 
 void AGloom2Character::OnFire()
 { 
+	/*Ammo system code*/
+	if (loadedAmmo <= 0) //if no ammo remaining
+	{
+		return; //don't fire
+	}
+	else
+	{
+		loadedAmmo--; //fire and deduct ammo
+	}
+	/*End ammo*/
+
 	if (Task != ETaskEnum::Fire) return;
 
 	if (loadedAmmo > 0)
@@ -182,6 +197,24 @@ void AGloom2Character::OnFire()
 }
 
 void AGloom2Character::OnReload()
+{
+	if (ammoPool <= 0 || loadedAmmo >= 30) //if no reserve ammo or gun is full
+	{
+		return;
+	}
+	else if (ammoPool < (30 - loadedAmmo)) //if reserve is less than full mag, load only remaining ammo
+	{
+		loadedAmmo = loadedAmmo + ammoPool;
+		ammoPool = 0;
+	}
+	else //else reload mag to full
+	{
+		ammoPool = ammoPool - (30 - loadedAmmo);
+		loadedAmmo = 30;
+	}
+}
+
+void AGloom2Character::onReload()
 {
 	if (ammoPool <= 0 || loadedAmmo >= 30) //if no reserve ammo or gun is full
 	{
