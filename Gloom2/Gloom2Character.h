@@ -87,10 +87,7 @@ public:
 		int32 ammoPool;
 	/*Ammo End*/
 
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
 protected:
 
 	void PerformTask(ETaskEnum::Type NewTask);
@@ -105,13 +102,8 @@ protected:
 	/** Fires a projectile. */
 	void OnFire();
 
-<<<<<<< HEAD
 	/** Reload Weapon */
 	void OnReload();
-=======
-	/*Reload weapon*/
-	void onReload();
->>>>>>> origin/master
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);

@@ -46,6 +46,8 @@ void AGloom2HUD::DrawHUD()
 
 	const FVector2D TeamDisplayPosition((Center.X * 0.025f), (Center.Y * 0.025f));
 	const FVector2D FragDisplayPosition((Canvas->ClipX * 0.95f), (Canvas->ClipY * 0.025f));
+	const FVector2D HealthDisplayPosition((Canvas->ClipX * 0.025f), (Canvas->ClipY * 0.95f));
+	const FVector2D AmmoDisplayPosition((Canvas->ClipX * 0.95f), (Canvas->ClipY * 0.95f));
 
 	// draw the crosshair
 	FCanvasTileItem TileItem( CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
@@ -59,6 +61,7 @@ void AGloom2HUD::DrawHUD()
 	playerFrags = GetFrags(Gloom2Player);
 	DisplayMessage(DisplayText, DisplayFont, DisplayMessagePosition);
 	DisplayGloomHUD(teamName, playerFrags, HUDFont, TeamDisplayPosition, FragDisplayPosition);
+	DisplayPlayerInfo(HUDFont, HealthDisplayPosition, AmmoDisplayPosition);
 	
 
 }
@@ -142,6 +145,17 @@ void AGloom2HUD::DisplayGloomHUD(FString Team, int32 Frags, UFont *HUDFont, FVec
 	// Display Amount of Frags
 	FString S_Frags = FString::FromInt(Frags);
 	Canvas->DrawText(HUDFont, (S_Frags), FragDisplayPosition.X, FragDisplayPosition.Y, 1.f, 1.f, FFontRenderInfo());
+
+	// Display Information Types
+	Canvas->DrawText(HUDFont, "Frags", FragDisplayPosition.X, FragDisplayPosition.Y * 0.25f, 0.4f, 0.4f, FFontRenderInfo());
+
+}
+
+void AGloom2HUD::DisplayPlayerInfo(UFont *HUDFont, FVector2D HealthDisplayPosition, FVector2D AmmoDisplayPosition)
+{
+	// Display Information Types
+	Canvas->DrawText(HUDFont, "Health", HealthDisplayPosition.X, HealthDisplayPosition.Y, 0.4f, 0.4f, FFontRenderInfo());
+	Canvas->DrawText(HUDFont, "Ammo", AmmoDisplayPosition.X, AmmoDisplayPosition.Y, 0.4f, 0.4f, FFontRenderInfo());
 
 }
 

@@ -58,6 +58,7 @@ private:
 
 	void DisplayMessage(FString DisplayText, UFont *DisplayFont, FVector2D DisplayMessagePosition);
 	void DisplayGloomHUD(FString Team, int32 Frags, UFont *HUDFont, FVector2D TeamDisplayPosition, FVector2D FragDisplayPosition);
+	void DisplayPlayerInfo(UFont *HUDFont, FVector2D HealthDisplayPosition, FVector2D AmmoDisplayPosition);
 	/*AGloom2PlayerController* GetPlayer();*/
 
 };
