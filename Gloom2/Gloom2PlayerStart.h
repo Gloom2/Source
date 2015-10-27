@@ -5,7 +5,7 @@
 #include "GameFramework/PlayerStart.h"
 #include "Gloom2PlayerStart.generated.h"
 
-/**
+/** This is the spectator, or team 0, spawn start, Alien and Human starts inherit directly from this class
  * 
  */
 UCLASS(Category = "Spawns")

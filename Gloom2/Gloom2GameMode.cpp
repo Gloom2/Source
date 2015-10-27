@@ -49,7 +49,7 @@ void AGloom2GameMode::PostLogin(APlayerController * NewPlayer)
 				switch (Team)
 				{
 				case 0:
-					currentPC->ClientSetMessage(currentPC, "You have joined the Spectators.");
+					currentPC->ClientSetMessage(currentPC, "You have joined the Observers.");
 					currentPS->SetTeamMessage(currentPC, 0);
 					currentPS->SetFrags();
 					currentPS->SetFragsMessage(currentPC, currentPS->GetFrags());
@@ -87,7 +87,7 @@ AActor * AGloom2GameMode::ChoosePlayerStart(AController *Player) //Choose the sp
 			TArray<AGloom2HumanStart *> HStarts; //Human Starts (Gloom2HumanStart)
 			TArray<AGloom2AlienStart *> AStarts; //Alien Starts (Gloom2AlienStart)
 			TArray<AGloom2PlayerStart *> SStarts; //Spectator Starts (Should just be Gloom2PlayerStart)
-			uint8 Team = PS->GetTeamNum();
+			int32 Team = PS->GetTeamNum();
 
 			if (Team == 1)
 			{

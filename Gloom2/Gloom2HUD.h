@@ -17,7 +17,8 @@ public:
 	/** Primary draw call for the HUD */
 	virtual void DrawHUD() override;
 
-	FString GetUIMessage();
+	UFUNCTION()
+		FString GetUIMessage();
 
 	UFUNCTION()
 		void SetMessage(FString Message);
@@ -28,38 +29,48 @@ public:
 	UFUNCTION()
 		void SetFragsMessage(int32 Frags);
 
-	/*UFUNCTION()
-		AGloom2HUD* SetGloomHUD(AGloom2PlayerController* Player);*/
+	UFUNCTION()
+		int32 GetFragsMessage();
 
-	int32 GetFrags(AGloom2PlayerController *Player);
-	//FString GetTeam(AGloom2PlayerController *Player);
+	UFUNCTION()
+		FString GetTeamMessage();
 
 
 private:
 	/** Crosshair asset pointer */
+	UPROPERTY()
 	class UTexture2D *CrosshairTex;
 
+	// HUD Fonts
 	class UFont *DisplayFont;
 	class UFont *HUDFont;
 
-	//void Tick(float DeltaTime) override;
-
 	FTimerHandle FTimerMessageRefresh;
 
+	// The message to be displayed to the HUD
 	FString DisplayText;
 
-	FString UIMessage;
-	int32 playerFrags;
-	int32 teamNum;
-	FString teamName;
-	AGloom2PlayerController *Gloom2Player;
-	//AGloom2PlayerState* Gloom2PS;
-	//AGloom2HUD* Gloom2HUD;
+	UPROPERTY()
+		FString UIMessage;
 
-	void DisplayMessage(FString DisplayText, UFont *DisplayFont, FVector2D DisplayMessagePosition);
-	void DisplayGloomHUD(FString Team, int32 Frags, UFont *HUDFont, FVector2D TeamDisplayPosition, FVector2D FragDisplayPosition);
-	void DisplayPlayerInfo(UFont *HUDFont, FVector2D HealthDisplayPosition, FVector2D AmmoDisplayPosition);
-	/*AGloom2PlayerController* GetPlayer();*/
+	UPROPERTY()
+		int32 playerFrags;
+
+	UPROPERTY()
+		int32 teamNum;
+
+	UPROPERTY()
+		FString teamName;
+
+	UPROPERTY()
+		AGloom2PlayerController *Gloom2Player;
+
+	UFUNCTION()
+		void DisplayMessage(FString DisplayText, UFont *DisplayFont, FVector2D DisplayMessagePosition);
+	UFUNCTION()
+		void DisplayGloomHUD(FString Team, int32 Frags, UFont *HUDFont, FVector2D TeamDisplayPosition, FVector2D FragDisplayPosition);
+	UFUNCTION()
+		void DisplayPlayerInfo(UFont *HUDFont, FVector2D HealthDisplayPosition, FVector2D AmmoDisplayPosition);
 
 };
 

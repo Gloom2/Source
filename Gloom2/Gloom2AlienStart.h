@@ -5,7 +5,7 @@
 #include "Gloom2PlayerStart.h"
 #include "Gloom2AlienStart.generated.h"
 
-/**
+/** This is the alien start, will spawn an egg in its place
  * 
  */
 UCLASS(Category = "Spawns")

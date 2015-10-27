@@ -23,10 +23,12 @@ public:
 	void UpdateTeamCount(AController *Player);
 
 protected:
-
-	uint8 numTeamH = 0;
-	uint8 numTeamA = 0;
-	uint8 numTeamS = 0;
+	UPROPERTY()
+		int32 numTeamH = 0;
+	UPROPERTY()
+		int32 numTeamA = 0;
+	UPROPERTY()
+		int32 numTeamS = 0;
 
 };
 

@@ -78,12 +78,6 @@ void AGloom2Character::SetupPlayerInputComponent(class UInputComponent* InputCom
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	
-	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AGloom2Character::TouchStarted);
-	/*if( EnableTouchscreenMovement(InputComponent) == false )
-	{
-		InputComponent->BindAction("Fire", IE_Pressed, this, &AGloom2Character::OnFire);
-	}*/
-	
 	InputComponent->BindAxis("MoveForward", this, &AGloom2Character::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AGloom2Character::MoveRight);
 	
@@ -199,65 +193,6 @@ void AGloom2Character::OnReload()
 	}
 }
 
-void AGloom2Character::BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	if( TouchItem.bIsPressed == true )
-	{
-		return;
-	}
-	TouchItem.bIsPressed = true;
-	TouchItem.FingerIndex = FingerIndex;
-	TouchItem.Location = Location;
-	TouchItem.bMoved = false;
-}
-
-void AGloom2Character::EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	if (TouchItem.bIsPressed == false)
-	{
-		return;
-	}
-	if( ( FingerIndex == TouchItem.FingerIndex ) && (TouchItem.bMoved == false) )
-	{
-		OnFire();
-	}
-	TouchItem.bIsPressed = false;
-}
-
-void AGloom2Character::TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	if ((TouchItem.bIsPressed == true) && ( TouchItem.FingerIndex==FingerIndex))
-	{
-		if (TouchItem.bIsPressed)
-		{
-			if (GetWorld() != nullptr)
-			{
-				UGameViewportClient* ViewportClient = GetWorld()->GetGameViewport();
-				if (ViewportClient != nullptr)
-				{
-					FVector MoveDelta = Location - TouchItem.Location;
-					FVector2D ScreenSize;
-					ViewportClient->GetViewportSize(ScreenSize);
-					FVector2D ScaledDelta = FVector2D( MoveDelta.X, MoveDelta.Y) / ScreenSize;									
-					if (ScaledDelta.X != 0.0f)
-					{
-						TouchItem.bMoved = true;
-						float Value = ScaledDelta.X * BaseTurnRate;
-						AddControllerYawInput(Value);
-					}
-					if (ScaledDelta.Y != 0.0f)
-					{
-						TouchItem.bMoved = true;
-						float Value = ScaledDelta.Y* BaseTurnRate;
-						AddControllerPitchInput(Value);
-					}
-					TouchItem.Location = Location;
-				}
-				TouchItem.Location = Location;
-			}
-		}
-	}
-}
 
 void AGloom2Character::MoveForward(float Value)
 {
@@ -287,19 +222,6 @@ void AGloom2Character::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-}
-
-bool AGloom2Character::EnableTouchscreenMovement(class UInputComponent* InputComponent)
-{
-	bool bResult = false;
-	if(FPlatformMisc::GetUseVirtualJoysticks() || GetDefault<UInputSettings>()->bUseMouseForTouch )
-	{
-		bResult = true;
-		InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AGloom2Character::BeginTouch);
-		InputComponent->BindTouch(EInputEvent::IE_Released, this, &AGloom2Character::EndTouch);
-		InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &AGloom2Character::TouchUpdate);
-	}
-	return bResult;
 }
 
 void AGloom2Character::Tick(float DeltaTime)

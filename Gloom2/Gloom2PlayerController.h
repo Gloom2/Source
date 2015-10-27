@@ -13,20 +13,16 @@ class GLOOM2_API AGloom2PlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-	FTimerHandle TimerHandle_Respawn;
+	FTimerHandle TimerHandle_Respawn; // Respawn timer
 
 	
 public:
 
-	void OnKilled();
+	void OnKilled(); // When player dies
 
-	void Respawn();
+	void Respawn(); // How player respawns (for now it auto-respawns)
 
-	UFUNCTION(Client, Reliable)
-		virtual void ClientSetMessage(AGloom2PlayerController *Gloom2Player, const FString &_message);
-	
-	void SetInfoHUD(AGloom2PlayerController *Gloom2Player);
-
-
+	UFUNCTION(Client, Reliable) // Set the message for the clients message display
+		virtual void ClientSetMessage(AGloom2PlayerController *Gloom2Player, const FString &_message); 
 	
 };

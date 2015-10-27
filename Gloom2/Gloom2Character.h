@@ -5,6 +5,7 @@
 
 class UInputComponent;
 
+// Firing Enumeration for the character
 UENUM()
 namespace ETaskEnum
 {
@@ -33,25 +34,32 @@ class AGloom2Character : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;
 
+	// Task replication
 	UPROPERTY(ReplicatedUsing = OnRep_Task)
 		TEnumAsByte<ETaskEnum::Type> Task;
 
+	// Task timer
 	FTimerHandle FTimerHandle_Task;
 
+	// Health that is replicated to the clients
 	UPROPERTY(ReplicatedUsing = OnRep_Health)
 		float Health;
 
 public:
 	AGloom2Character();
 
+	// Pull the view rotation from Character, using it for viewing other players aim
 	FRotator GetViewRotation() const override;
 	void Tick(float DeltaTime) override;
 
+	// Take damage from enemy players
 	float TakeDamage(float DamageAmount, const FDamageEvent & DamageEvent, AController * EventInstigator, AActor * DamageCauser) override;
 
+	// Task function (UFUNCTION so the engine will recognize it)
 	UFUNCTION()
 		void OnRep_Task();
 
+	// Health function for the engine
 	UFUNCTION()
 		void OnRep_Health();
 	
@@ -90,13 +98,17 @@ public:
 
 protected:
 
+	// Perform the task function
 	void PerformTask(ETaskEnum::Type NewTask);
 
+	// Server performs the task
 	UFUNCTION(Server, Reliable, WithValidation)
 		void ServerPerformTask(ETaskEnum::Type NewTask);
 
+	// Start firing function
 	void StartFiring();
 
+	// Stop firing function
 	void StopFiring();
 	
 	/** Fires a projectile. */
@@ -123,7 +135,7 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-	struct TouchData
+	/*struct TouchData
 	{
 		TouchData() { bIsPressed = false;Location=FVector::ZeroVector;}
 		bool bIsPressed;
@@ -134,7 +146,7 @@ protected:
 	void BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
 	void EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
 	void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
-	TouchData	TouchItem;
+	TouchData	TouchItem;*/
 	
 protected:
 	// APawn interface
@@ -147,7 +159,7 @@ protected:
 	 * @param	InputComponent	The input component pointer to bind controls to
 	 * @returns true if touch controls were enabled.
 	 */
-	bool EnableTouchscreenMovement(UInputComponent* InputComponent);
+	//bool EnableTouchscreenMovement(UInputComponent* InputComponent);
 
 public:
 	/** Returns Mesh1P subobject **/
